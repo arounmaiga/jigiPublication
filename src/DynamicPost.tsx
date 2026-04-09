@@ -32,7 +32,7 @@ const KenBurns: React.FC<{
   src: string;
   direction: "in" | "out";
   brightness?: number;
-}> = ({ src, direction, brightness = 0.45 }) => {
+}> = ({ src, direction, brightness = 0.65 }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
 
@@ -134,7 +134,7 @@ export const DynamicPost: React.FC<DynamicPostProps> = ({
 
       {/* Image de fond avec Ken Burns sur toute la duree */}
       {imageUrl && (
-        <KenBurns src={imageUrl} direction="in" brightness={0.45} />
+        <KenBurns src={imageUrl} direction="in" brightness={0.65} />
       )}
 
       {/* Hook title en haut (premiers 20% de la video) */}
