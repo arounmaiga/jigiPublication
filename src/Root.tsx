@@ -2,6 +2,7 @@ import { Composition } from "remotion";
 import { JigiPromo } from "./JigiPromo";
 import { JigiPromoSchema } from "./types";
 import { AminataTestimonial } from "./AminataTestimonial";
+import { DynamicPost } from "./DynamicPost";
 import { FPS, WIDTH, HEIGHT, TOTAL_FRAMES } from "./constants";
 
 export const RemotionRoot: React.FC = () => {
@@ -54,6 +55,27 @@ export const RemotionRoot: React.FC = () => {
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
+      />
+      {/* Dynamic Post — driven by n8n pipeline props */}
+      <Composition
+        id="DynamicPost"
+        component={DynamicPost}
+        durationInFrames={30 * FPS}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          imageUrl: "",
+          audioUrl: "",
+          backgroundMusicUrl: "https://files.catbox.moe/0qxh0p.mp3",
+          subtitles: ["JIGI. La sante pour tous."],
+          durationInSeconds: 30,
+          hookTitle: "JIGI",
+          persona: "Aminata",
+        }}
+        calculateMetadata={({ props }) => ({
+          durationInFrames: Math.ceil((props.durationInSeconds || 30) * FPS),
+        })}
       />
     </>
   );
