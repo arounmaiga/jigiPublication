@@ -7,7 +7,6 @@ import {
   interpolate,
   spring,
   useVideoConfig,
-  staticFile,
 } from "remotion";
 
 const COLORS = {
@@ -668,10 +667,10 @@ export const AminataTestimonial: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.dark }}>
       {/* Voix-off ElevenLabs */}
-      <Audio src={staticFile("aminata-voiceover.mp3")} volume={0.95} />
+      <Audio src="https://files.catbox.moe/3u8znz.mp3" volume={0.95} />
 
       {/* Musique kora en fond */}
-      <Audio src={staticFile("kora-background.mp3")} volume={0.15} />
+      <Audio src="https://files.catbox.moe/0qxh0p.mp3" volume={0.15} />
 
       {/* Scènes calées sur la voix-off (31s total)
          Script:
