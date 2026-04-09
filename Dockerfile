@@ -1,9 +1,10 @@
 FROM node:20-slim
 
-# Install Chromium + ffmpeg (required by Remotion)
+# Install Chromium + ffmpeg + curl (required by Remotion)
 RUN apt-get update && apt-get install -y \
   chromium \
   ffmpeg \
+  curl \
   fonts-liberation \
   fonts-noto-color-emoji \
   --no-install-recommends \
@@ -22,7 +23,11 @@ RUN npm install --omit=dev
 # Copy source code
 COPY src/ ./src/
 COPY public/ ./public/
-COPY server.js remotion.config.ts tsconfig.json ./
+COPY server.js remotion.config.ts tsconfig.json download-assets.sh ./
+RUN chmod +x download-assets.sh
+
+# Download audio assets at build time
+RUN bash download-assets.sh
 
 # Create output directory
 RUN mkdir -p out
