@@ -65,7 +65,7 @@ export const RemotionRoot: React.FC = () => {
         width={WIDTH}
         height={HEIGHT}
         defaultProps={{
-          imageUrl: "",
+          imageUrls: [],
           audioUrl: "",
           backgroundMusicUrl: "https://files.catbox.moe/0qxh0p.mp3",
           subtitles: ["JIGI. La sante pour tous."],

@@ -18,8 +18,10 @@ const COLORS = {
   white: "#FFFFFF",
 };
 
+const LOGO_URL = "https://files.catbox.moe/2vah2d.svg";
+
 export interface DynamicPostProps {
-  imageUrl: string;
+  imageUrls: string[];
   audioUrl: string;
   backgroundMusicUrl: string;
   subtitles: string[];
@@ -28,21 +30,29 @@ export interface DynamicPostProps {
   persona: string;
 }
 
-const KenBurns: React.FC<{
+// Ken Burns with crossfade transition
+const ImageScene: React.FC<{
   src: string;
   direction: "in" | "out";
-  brightness?: number;
-}> = ({ src, direction, brightness = 0.65 }) => {
+}> = ({ src, direction }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { durationInFrames, fps } = useVideoConfig();
 
   const scale =
     direction === "in"
-      ? interpolate(frame, [0, durationInFrames], [1.0, 1.15], { extrapolateRight: "clamp" })
-      : interpolate(frame, [0, durationInFrames], [1.15, 1.0], { extrapolateRight: "clamp" });
+      ? interpolate(frame, [0, durationInFrames], [1.0, 1.12], { extrapolateRight: "clamp" })
+      : interpolate(frame, [0, durationInFrames], [1.12, 1.0], { extrapolateRight: "clamp" });
+
+  // Fade in at start, fade out at end
+  const opacity = interpolate(
+    frame,
+    [0, 8, durationInFrames - 8, durationInFrames],
+    [0, 1, 1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+  );
 
   return (
-    <AbsoluteFill style={{ overflow: "hidden" }}>
+    <AbsoluteFill style={{ opacity, overflow: "hidden" }}>
       <Img
         src={src}
         style={{
@@ -50,17 +60,15 @@ const KenBurns: React.FC<{
           height: "100%",
           objectFit: "cover",
           transform: `scale(${scale})`,
-          filter: `brightness(${brightness})`,
+          filter: "brightness(0.65)",
         }}
       />
     </AbsoluteFill>
   );
 };
 
-const SubtitleOverlay: React.FC<{
-  text: string;
-  index: number;
-}> = ({ text, index }) => {
+// Subtitle overlay
+const SubtitleOverlay: React.FC<{ text: string }> = ({ text }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -111,80 +119,7 @@ const SubtitleOverlay: React.FC<{
   );
 };
 
-export const DynamicPost: React.FC<DynamicPostProps> = ({
-  imageUrl,
-  audioUrl,
-  backgroundMusicUrl,
-  subtitles,
-  durationInSeconds,
-  hookTitle,
-}) => {
-  const fps = 30;
-  const totalFrames = Math.ceil(durationInSeconds * fps);
-  const subsCount = subtitles.length || 1;
-  const framesPerSub = Math.floor(totalFrames / subsCount);
-
-  return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.dark }}>
-      {/* Voix-off */}
-      {audioUrl && <Audio src={audioUrl} volume={0.95} />}
-
-      {/* Musique de fond */}
-      {backgroundMusicUrl && <Audio src={backgroundMusicUrl} volume={0.15} />}
-
-      {/* Image de fond avec Ken Burns sur toute la duree */}
-      {imageUrl && (
-        <KenBurns src={imageUrl} direction="in" brightness={0.65} />
-      )}
-
-      {/* Hook title en haut (premiers 20% de la video) */}
-      <Sequence from={0} durationInFrames={Math.floor(totalFrames * 0.25)}>
-        <HookOverlay text={hookTitle} />
-      </Sequence>
-
-      {/* Sous-titres synchronises */}
-      {subtitles.map((text, i) => (
-        <Sequence
-          key={i}
-          from={i * framesPerSub}
-          durationInFrames={framesPerSub}
-        >
-          <SubtitleOverlay text={text} index={i} />
-        </Sequence>
-      ))}
-
-      {/* Logo JIGI watermark */}
-      <div
-        style={{
-          position: "absolute",
-          top: 50,
-          right: 50,
-          opacity: 0.4,
-          zIndex: 100,
-        }}
-      >
-        <Img
-          src="https://i.ibb.co/DHGxWzTg/jigi-logo-hd-v2.png"
-          style={{ width: 80, height: 80 }}
-        />
-      </div>
-
-      {/* Barre terracotta en bas */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 12,
-          backgroundColor: COLORS.terracotta,
-          zIndex: 100,
-        }}
-      />
-    </AbsoluteFill>
-  );
-};
-
+// Hook title overlay (first 20% of video)
 const HookOverlay: React.FC<{ text: string }> = ({ text }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -230,5 +165,96 @@ const HookOverlay: React.FC<{ text: string }> = ({ text }) => {
         </span>
       </div>
     </div>
+  );
+};
+
+export const DynamicPost: React.FC<DynamicPostProps> = ({
+  imageUrls,
+  audioUrl,
+  backgroundMusicUrl,
+  subtitles,
+  durationInSeconds,
+  hookTitle,
+}) => {
+  const fps = 30;
+  const totalFrames = Math.ceil(durationInSeconds * fps);
+  const subsCount = subtitles.length || 1;
+  const framesPerSub = Math.floor(totalFrames / subsCount);
+
+  // Distribute images across subtitles (3 images for 5 subtitles)
+  // Image 1: subtitles 0-1, Image 2: subtitles 2-3, Image 3: subtitle 4
+  const images = imageUrls.length > 0 ? imageUrls : [];
+  const imgCount = images.length || 1;
+
+  // Calculate frames per image
+  const framesPerImage = Math.floor(totalFrames / imgCount);
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: COLORS.dark }}>
+      {/* Voix-off */}
+      {audioUrl && <Audio src={audioUrl} volume={0.95} />}
+
+      {/* Musique de fond */}
+      {backgroundMusicUrl && <Audio src={backgroundMusicUrl} volume={0.15} />}
+
+      {/* Images with Ken Burns + crossfade transitions */}
+      {images.map((url, i) => (
+        <Sequence
+          key={`img-${i}`}
+          from={i * framesPerImage}
+          durationInFrames={framesPerImage + 8}
+        >
+          <ImageScene
+            src={url}
+            direction={i % 2 === 0 ? "in" : "out"}
+          />
+        </Sequence>
+      ))}
+
+      {/* Hook title (first 20% of video) */}
+      <Sequence from={0} durationInFrames={Math.floor(totalFrames * 0.2)}>
+        <HookOverlay text={hookTitle} />
+      </Sequence>
+
+      {/* Subtitles synced to audio */}
+      {subtitles.map((text, i) => (
+        <Sequence
+          key={`sub-${i}`}
+          from={i * framesPerSub}
+          durationInFrames={framesPerSub}
+        >
+          <SubtitleOverlay text={text} />
+        </Sequence>
+      ))}
+
+      {/* Logo JIGI en haut a droite */}
+      <div
+        style={{
+          position: "absolute",
+          top: 40,
+          right: 40,
+          zIndex: 100,
+          opacity: 0.85,
+        }}
+      >
+        <Img
+          src={LOGO_URL}
+          style={{ width: 70, height: 70 }}
+        />
+      </div>
+
+      {/* Barre terracotta en bas */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 12,
+          backgroundColor: COLORS.terracotta,
+          zIndex: 100,
+        }}
+      />
+    </AbsoluteFill>
   );
 };
