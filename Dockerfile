@@ -18,16 +18,19 @@ WORKDIR /app
 
 # Copy package files and install
 COPY package.json ./
-RUN npm install --omit=dev
+RUN npm install
 
-# Copy source code
+# Copy all source files
 COPY src/ ./src/
 COPY public/ ./public/
 COPY server.js remotion.config.ts tsconfig.json download-assets.sh ./
 RUN chmod +x download-assets.sh
 
-# Download audio assets at build time
-RUN bash download-assets.sh
+# Download audio assets and verify
+RUN bash download-assets.sh && ls -la public/
+
+# Pre-bundle Remotion to cache the webpack build
+RUN npx remotion bundle --public-dir=public || true
 
 # Create output directory
 RUN mkdir -p out
@@ -36,4 +39,4 @@ RUN mkdir -p out
 ENV PORT=7860
 EXPOSE 7860
 
-CMD ["node", "server.js"]
+CMD ["bash", "-c", "bash download-assets.sh && node server.js"]

@@ -38,11 +38,13 @@ app.post("/render", (req, res) => {
     fs.writeFileSync(propsPath, JSON.stringify(props));
 
     // Build remotion render command
+    const publicDir = path.join(__dirname, "public");
     const cmd = [
       "npx remotion render",
       compositionId,
       `"${outputPath}"`,
       `--props="${propsPath}"`,
+      `--public-dir="${publicDir}"`,
     ].join(" ");
 
     console.log(`[RENDER] Starting: ${compositionId} -> ${fileName}`);
