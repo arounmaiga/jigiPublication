@@ -1,10 +1,10 @@
 ---
-title: Jigi Remotion
-emoji: ⚡
-colorFrom: pink
-colorTo: pink
+title: JIGI Remotion Renderer
+emoji: 🎬
+colorFrom: purple
+colorTo: red
 sdk: docker
-pinned: false
+app_port: 7860
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+JIGI Health video renderer powered by Remotion. Accepts POST /render with composition ID and props, returns rendered MP4 URL.
