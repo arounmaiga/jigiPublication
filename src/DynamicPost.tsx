@@ -343,11 +343,11 @@ const ClosingStatScreen: React.FC<{
         </div>
       )}
 
-      {/* JIGI logo + tagline */}
+      {/* JIGI logo + CTA + tagline */}
       <div
         style={{
           position: "absolute",
-          bottom: 180,
+          bottom: 120,
           left: 0,
           right: 0,
           textAlign: "center",
@@ -356,31 +356,57 @@ const ClosingStatScreen: React.FC<{
       >
         <Img
           src={LOGO_URL}
-          style={{ width: 120, height: 120, marginBottom: 20 }}
+          style={{ width: 180, height: 180, marginBottom: 16 }}
         />
         <div>
           <span
             style={{
-              fontSize: 56,
+              fontSize: 72,
               fontWeight: 900,
               color: COLORS.cream,
               fontFamily: "Arial, sans-serif",
-              letterSpacing: 6,
+              letterSpacing: 8,
             }}
           >
             JIGI
           </span>
         </div>
-        <div style={{ marginTop: 4 }}>
+        <div style={{ marginTop: 18 }}>
           <span
             style={{
-              fontSize: 32,
+              fontSize: 30,
+              fontWeight: 700,
+              color: COLORS.cream,
+              fontFamily: "Arial, sans-serif",
+              lineHeight: 1.25,
+              display: "block",
+              textShadow: "0 2px 8px rgba(0,0,0,0.6)",
+            }}
+          >
+            Téléchargez JIGI
+          </span>
+          <span
+            style={{
+              fontSize: 26,
               color: COLORS.terracotta,
               fontFamily: "Arial, sans-serif",
               fontStyle: "italic",
+              display: "block",
+              marginTop: 4,
             }}
           >
-            La santé pour tous
+            Votre assistant médical personnel
+          </span>
+          <span
+            style={{
+              fontSize: 26,
+              color: COLORS.terracotta,
+              fontFamily: "Arial, sans-serif",
+              fontStyle: "italic",
+              display: "block",
+            }}
+          >
+            pour l&apos;Afrique
           </span>
         </div>
       </div>
