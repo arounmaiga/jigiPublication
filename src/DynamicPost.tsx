@@ -19,6 +19,10 @@ const COLORS = {
 };
 
 const LOGO_URL = "https://files.catbox.moe/2vah2d.svg";
+const APP_STORE_BADGE_URL =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Download_on_the_App_Store_Badge.svg/1024px-Download_on_the_App_Store_Badge.svg.png";
+const PLAY_STORE_BADGE_URL =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/1024px-Google_Play_Store_badge_EN.svg.png";
 const STAT_SCREEN_DURATION_SEC = 4; // Durée de l'écran stat final
 
 export interface DynamicPostProps {
@@ -347,7 +351,7 @@ const ClosingStatScreen: React.FC<{
       <div
         style={{
           position: "absolute",
-          bottom: 120,
+          bottom: 260,
           left: 0,
           right: 0,
           textAlign: "center",
@@ -356,12 +360,12 @@ const ClosingStatScreen: React.FC<{
       >
         <Img
           src={LOGO_URL}
-          style={{ width: 180, height: 180, marginBottom: 16 }}
+          style={{ width: 170, height: 170, marginBottom: 10 }}
         />
         <div>
           <span
             style={{
-              fontSize: 72,
+              fontSize: 68,
               fontWeight: 900,
               color: COLORS.cream,
               fontFamily: "Arial, sans-serif",
@@ -371,28 +375,16 @@ const ClosingStatScreen: React.FC<{
             JIGI
           </span>
         </div>
-        <div style={{ marginTop: 18 }}>
+        <div style={{ marginTop: 14 }}>
           <span
             style={{
-              fontSize: 30,
+              fontSize: 28,
               fontWeight: 700,
               color: COLORS.cream,
               fontFamily: "Arial, sans-serif",
-              lineHeight: 1.25,
+              lineHeight: 1.2,
               display: "block",
               textShadow: "0 2px 8px rgba(0,0,0,0.6)",
-            }}
-          >
-            Téléchargez JIGI
-          </span>
-          <span
-            style={{
-              fontSize: 26,
-              color: COLORS.terracotta,
-              fontFamily: "Arial, sans-serif",
-              fontStyle: "italic",
-              display: "block",
-              marginTop: 4,
             }}
           >
             Votre assistant médical personnel
@@ -404,11 +396,36 @@ const ClosingStatScreen: React.FC<{
               fontFamily: "Arial, sans-serif",
               fontStyle: "italic",
               display: "block",
+              marginTop: 2,
             }}
           >
             pour l&apos;Afrique
           </span>
         </div>
+      </div>
+
+      {/* App Store + Google Play badges */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 90,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 24,
+          transform: `scale(${logoScale})`,
+        }}
+      >
+        <Img
+          src={APP_STORE_BADGE_URL}
+          style={{ height: 90, width: "auto" }}
+        />
+        <Img
+          src={PLAY_STORE_BADGE_URL}
+          style={{ height: 90, width: "auto" }}
+        />
       </div>
     </AbsoluteFill>
   );
