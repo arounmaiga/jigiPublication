@@ -68,8 +68,9 @@ const ImageScene: React.FC<{
   }
 
   // Long crossfade — no fade at start for first image, no fade at end for last image
-  const fadeInEnd = isFirst ? 0 : CROSSFADE_FRAMES;
-  const fadeOutStart = isLast ? durationInFrames : durationInFrames - CROSSFADE_FRAMES;
+  // Use min 1 frame to avoid duplicate values in inputRange (interpolate requires strictly increasing)
+  const fadeInEnd = isFirst ? 1 : CROSSFADE_FRAMES;
+  const fadeOutStart = isLast ? durationInFrames - 1 : durationInFrames - CROSSFADE_FRAMES;
 
   const opacity = interpolate(
     frame,
