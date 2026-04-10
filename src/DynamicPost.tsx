@@ -242,7 +242,7 @@ const ClosingStatScreen: React.FC<{
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: COLORS.violet,
+        backgroundColor: COLORS.dark,
         opacity: bgOpacity,
         zIndex: 200,
         justifyContent: "center",
@@ -261,13 +261,13 @@ const ClosingStatScreen: React.FC<{
               height: "100%",
               objectFit: "cover",
               transform: `scale(${bgScale})`,
-              filter: "brightness(0.4)",
+              filter: "brightness(0.62) saturate(1.05)",
             }}
           />
-          {/* Dark overlay pour la lisibilité du texte */}
+          {/* Warm cinematic overlay — dark top, terracotta glow bottom */}
           <AbsoluteFill
             style={{
-              background: `linear-gradient(180deg, ${COLORS.dark}aa 0%, ${COLORS.violet}dd 100%)`,
+              background: `linear-gradient(180deg, rgba(26,26,46,0.55) 0%, rgba(26,26,46,0.25) 45%, rgba(200,90,58,0.45) 100%)`,
             }}
           />
         </AbsoluteFill>
@@ -305,11 +305,20 @@ const ClosingStatScreen: React.FC<{
             color: COLORS.cream,
             fontFamily: "Arial, sans-serif",
             lineHeight: 1.3,
-            textShadow: "0 4px 20px rgba(0,0,0,0.5)",
+            textShadow: "0 6px 24px rgba(0,0,0,0.75)",
           }}
         >
           {stat}
         </span>
+        <div
+          style={{
+            width: 140,
+            height: 5,
+            backgroundColor: COLORS.terracotta,
+            margin: "28px auto 0",
+            borderRadius: 3,
+          }}
+        />
       </div>
 
       {/* Source */}
