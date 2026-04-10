@@ -74,6 +74,7 @@ export const RemotionRoot: React.FC = () => {
           persona: "Aminata",
           closingStat: "",
           closingStatSource: "",
+          closingImageUrl: "",
         }}
         calculateMetadata={({ props }) => {
           const narrative = Math.ceil((props.durationInSeconds || 30) * FPS);

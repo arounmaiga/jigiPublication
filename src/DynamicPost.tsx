@@ -31,6 +31,7 @@ export interface DynamicPostProps {
   persona: string;
   closingStat?: string;
   closingStatSource?: string;
+  closingImageUrl?: string;
 }
 
 // Crossfade transition duration (smooth continuity between images)
@@ -195,16 +196,22 @@ const HookOverlay: React.FC<{ text: string }> = ({ text }) => {
 };
 
 // ============ CLOSING STAT SCREEN ============
-// Écran plein écran qui apparaît à la fin avec la stat qui frappe
+// Écran final avec image fal.ai en fond (ou violet si pas d'image) + stat en overlay
 const ClosingStatScreen: React.FC<{
   stat: string;
   source?: string;
-}> = ({ stat, source }) => {
+  backgroundImageUrl?: string;
+}> = ({ stat, source, backgroundImageUrl }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
 
-  // Fond violet qui s'installe
+  // Fond qui s'installe
   const bgOpacity = interpolate(frame, [0, 10], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+
+  // Ken Burns on background image
+  const bgScale = interpolate(frame, [0, durationInFrames], [1.0, 1.1], {
     extrapolateRight: "clamp",
   });
 
@@ -240,20 +247,45 @@ const ClosingStatScreen: React.FC<{
         justifyContent: "center",
         alignItems: "center",
         padding: 60,
+        overflow: "hidden",
       }}
     >
-      {/* Decorative orb */}
-      <div
-        style={{
-          position: "absolute",
-          top: 200,
-          right: -100,
-          width: 500,
-          height: 500,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${COLORS.terracotta}33, transparent)`,
-        }}
-      />
+      {/* Background image (if available) */}
+      {backgroundImageUrl && (
+        <AbsoluteFill style={{ overflow: "hidden" }}>
+          <Img
+            src={backgroundImageUrl}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transform: `scale(${bgScale})`,
+              filter: "brightness(0.4)",
+            }}
+          />
+          {/* Dark overlay pour la lisibilité du texte */}
+          <AbsoluteFill
+            style={{
+              background: `linear-gradient(180deg, ${COLORS.dark}aa 0%, ${COLORS.violet}dd 100%)`,
+            }}
+          />
+        </AbsoluteFill>
+      )}
+
+      {/* Decorative orb (only if no background image) */}
+      {!backgroundImageUrl && (
+        <div
+          style={{
+            position: "absolute",
+            top: 200,
+            right: -100,
+            width: 500,
+            height: 500,
+            borderRadius: "50%",
+            background: `radial-gradient(circle, ${COLORS.terracotta}33, transparent)`,
+          }}
+        />
+      )}
 
       {/* Main stat */}
       <div
@@ -355,6 +387,7 @@ export const DynamicPost: React.FC<DynamicPostProps> = ({
   hookTitle,
   closingStat,
   closingStatSource,
+  closingImageUrl,
 }) => {
   const fps = 30;
   const narrativeFrames = Math.ceil(durationInSeconds * fps);
@@ -452,7 +485,11 @@ export const DynamicPost: React.FC<DynamicPostProps> = ({
       {/* === CLOSING STAT SCREEN === */}
       {closingStat && (
         <Sequence from={narrativeFrames} durationInFrames={statFrames}>
-          <ClosingStatScreen stat={closingStat} source={closingStatSource} />
+          <ClosingStatScreen
+            stat={closingStat}
+            source={closingStatSource}
+            backgroundImageUrl={closingImageUrl}
+          />
         </Sequence>
       )}
     </AbsoluteFill>
