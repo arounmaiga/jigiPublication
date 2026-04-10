@@ -19,11 +19,95 @@ const COLORS = {
 };
 
 const LOGO_URL = "https://files.catbox.moe/2vah2d.svg";
-const APP_STORE_BADGE_URL =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Download_on_the_App_Store_Badge.svg/1024px-Download_on_the_App_Store_Badge.svg.png";
-const PLAY_STORE_BADGE_URL =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/1024px-Google_Play_Store_badge_EN.svg.png";
 const STAT_SCREEN_DURATION_SEC = 4; // Durée de l'écran stat final
+
+const AppStoreBadge: React.FC<{ height?: number }> = ({ height = 90 }) => (
+  <svg
+    viewBox="0 0 260 84"
+    style={{ height, width: "auto" }}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect width="260" height="84" rx="14" fill="#000" stroke="#fff" strokeWidth="1.5" />
+    {/* Apple logo */}
+    <path
+      d="M48.3 43.1c0-7 5.7-10.4 6-10.6-3.3-4.8-8.4-5.5-10.2-5.6-4.3-.5-8.4 2.6-10.6 2.6-2.2 0-5.6-2.5-9.2-2.5-4.7.1-9.1 2.7-11.5 7-5 8.6-1.3 21.4 3.5 28.5 2.4 3.4 5.2 7.3 9 7.2 3.6-.1 5-2.3 9.4-2.3 4.4 0 5.6 2.3 9.4 2.3 3.9-.1 6.3-3.5 8.7-7 2.8-4 3.9-7.9 3.9-8.1-.1-.1-7.4-2.9-7.4-11.5zM41.5 22.1c2-2.4 3.3-5.7 2.9-9-2.8.1-6.3 1.9-8.3 4.3-1.8 2.1-3.4 5.4-3 8.7 3.2.2 6.4-1.6 8.4-4z"
+      fill="#fff"
+    />
+    <text
+      x="68"
+      y="32"
+      fill="#fff"
+      fontFamily="Arial, sans-serif"
+      fontSize="14"
+    >
+      Télécharger dans l&apos;
+    </text>
+    <text
+      x="68"
+      y="62"
+      fill="#fff"
+      fontFamily="Arial, sans-serif"
+      fontSize="28"
+      fontWeight="700"
+    >
+      App Store
+    </text>
+  </svg>
+);
+
+const PlayStoreBadge: React.FC<{ height?: number }> = ({ height = 90 }) => (
+  <svg
+    viewBox="0 0 260 84"
+    style={{ height, width: "auto" }}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect width="260" height="84" rx="14" fill="#000" stroke="#fff" strokeWidth="1.5" />
+    {/* Google Play triangle */}
+    <defs>
+      <linearGradient id="pg1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#00A0FF" />
+        <stop offset="1" stopColor="#00E3FF" />
+      </linearGradient>
+      <linearGradient id="pg2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stopColor="#FFBD00" />
+        <stop offset="1" stopColor="#FFE000" />
+      </linearGradient>
+      <linearGradient id="pg3" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#FF3A44" />
+        <stop offset="1" stopColor="#C31162" />
+      </linearGradient>
+      <linearGradient id="pg4" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#32A071" />
+        <stop offset="1" stopColor="#2DA771" />
+      </linearGradient>
+    </defs>
+    <g transform="translate(18, 18) scale(1.3)">
+      <path d="M0 0 L0 36 L20 18 Z" fill="url(#pg1)" />
+      <path d="M0 0 L20 18 L26 12 L6 0 Z" fill="url(#pg2)" />
+      <path d="M0 36 L20 18 L26 24 L6 36 Z" fill="url(#pg3)" />
+      <path d="M20 18 L26 12 L34 18 L26 24 Z" fill="url(#pg4)" />
+    </g>
+    <text
+      x="78"
+      y="32"
+      fill="#fff"
+      fontFamily="Arial, sans-serif"
+      fontSize="14"
+    >
+      DISPONIBLE SUR
+    </text>
+    <text
+      x="78"
+      y="62"
+      fill="#fff"
+      fontFamily="Arial, sans-serif"
+      fontSize="28"
+      fontWeight="700"
+    >
+      Google Play
+    </text>
+  </svg>
+);
 
 export interface DynamicPostProps {
   imageUrls: string[];
@@ -404,7 +488,7 @@ const ClosingStatScreen: React.FC<{
         </div>
       </div>
 
-      {/* App Store + Google Play badges */}
+      {/* App Store + Google Play badges (inline SVG, no external deps) */}
       <div
         style={{
           position: "absolute",
@@ -418,14 +502,8 @@ const ClosingStatScreen: React.FC<{
           transform: `scale(${logoScale})`,
         }}
       >
-        <Img
-          src={APP_STORE_BADGE_URL}
-          style={{ height: 90, width: "auto" }}
-        />
-        <Img
-          src={PLAY_STORE_BADGE_URL}
-          style={{ height: 90, width: "auto" }}
-        />
+        <AppStoreBadge height={90} />
+        <PlayStoreBadge height={90} />
       </div>
     </AbsoluteFill>
   );
