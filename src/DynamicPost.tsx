@@ -33,23 +33,47 @@ export interface DynamicPostProps {
   closingStatSource?: string;
 }
 
-// Ken Burns with crossfade transition
+// Crossfade transition duration (smooth continuity between images)
+const CROSSFADE_FRAMES = 22; // ~0.73s at 30fps
+
+// Ken Burns with long crossfade transition
 const ImageScene: React.FC<{
   src: string;
-  direction: "in" | "out";
-}> = ({ src, direction }) => {
+  kenBurnsIndex: number;
+  isFirst: boolean;
+  isLast: boolean;
+}> = ({ src, kenBurnsIndex, isFirst, isLast }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
 
-  const scale =
-    direction === "in"
-      ? interpolate(frame, [0, durationInFrames], [1.0, 1.12], { extrapolateRight: "clamp" })
-      : interpolate(frame, [0, durationInFrames], [1.12, 1.0], { extrapolateRight: "clamp" });
+  // Varied Ken Burns movements based on index for visual variety
+  // Index 0: zoom in center, 1: zoom out, 2: zoom in from left, 3: zoom in from right
+  const kenBurnsVariant = kenBurnsIndex % 4;
+
+  let scale = 1;
+  let translateX = 0;
+  let translateY = 0;
+
+  if (kenBurnsVariant === 0) {
+    scale = interpolate(frame, [0, durationInFrames], [1.0, 1.15], { extrapolateRight: "clamp" });
+  } else if (kenBurnsVariant === 1) {
+    scale = interpolate(frame, [0, durationInFrames], [1.15, 1.0], { extrapolateRight: "clamp" });
+  } else if (kenBurnsVariant === 2) {
+    scale = interpolate(frame, [0, durationInFrames], [1.08, 1.18], { extrapolateRight: "clamp" });
+    translateX = interpolate(frame, [0, durationInFrames], [-20, 20], { extrapolateRight: "clamp" });
+  } else {
+    scale = interpolate(frame, [0, durationInFrames], [1.08, 1.18], { extrapolateRight: "clamp" });
+    translateX = interpolate(frame, [0, durationInFrames], [20, -20], { extrapolateRight: "clamp" });
+  }
+
+  // Long crossfade — no fade at start for first image, no fade at end for last image
+  const fadeInEnd = isFirst ? 0 : CROSSFADE_FRAMES;
+  const fadeOutStart = isLast ? durationInFrames : durationInFrames - CROSSFADE_FRAMES;
 
   const opacity = interpolate(
     frame,
-    [0, 8, durationInFrames - 8, durationInFrames],
-    [0, 1, 1, 0],
+    [0, fadeInEnd, fadeOutStart, durationInFrames],
+    [isFirst ? 1 : 0, 1, 1, isLast ? 1 : 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
 
@@ -61,7 +85,7 @@ const ImageScene: React.FC<{
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          transform: `scale(${scale})`,
+          transform: `scale(${scale}) translate(${translateX}px, ${translateY}px)`,
           filter: "brightness(0.65)",
         }}
       />
@@ -357,19 +381,27 @@ export const DynamicPost: React.FC<DynamicPostProps> = ({
       {backgroundMusicUrl && <Audio src={backgroundMusicUrl} volume={0.15} />}
 
       {/* === NARRATIVE PART === */}
-      {/* Images with Ken Burns + crossfade transitions */}
-      {images.map((url, i) => (
-        <Sequence
-          key={`img-${i}`}
-          from={i * framesPerImage}
-          durationInFrames={framesPerImage + 8}
-        >
-          <ImageScene
-            src={url}
-            direction={i % 2 === 0 ? "in" : "out"}
-          />
-        </Sequence>
-      ))}
+      {/* Images with Ken Burns + long crossfade transitions (0.73s overlap) */}
+      {images.map((url, i) => {
+        // Each image scene overlaps with the next by CROSSFADE_FRAMES
+        // First image starts at frame 0, next ones start earlier to create overlap
+        const sceneStart = i === 0 ? 0 : i * framesPerImage - CROSSFADE_FRAMES;
+        const sceneDuration = framesPerImage + CROSSFADE_FRAMES;
+        return (
+          <Sequence
+            key={`img-${i}`}
+            from={sceneStart}
+            durationInFrames={sceneDuration}
+          >
+            <ImageScene
+              src={url}
+              kenBurnsIndex={i}
+              isFirst={i === 0}
+              isLast={i === images.length - 1}
+            />
+          </Sequence>
+        );
+      })}
 
       {/* Hook title (first 20% of narrative) */}
       <Sequence from={0} durationInFrames={Math.floor(narrativeFrames * 0.2)}>
