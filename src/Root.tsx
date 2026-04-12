@@ -78,7 +78,7 @@ export const RemotionRoot: React.FC = () => {
         }}
         calculateMetadata={({ props }) => {
           const narrative = Math.ceil((props.durationInSeconds || 30) * FPS);
-          const statScreen = props.closingStat ? 4 * FPS : 0;
+          const statScreen = props.closingStat ? 7 * FPS : 0;
           return { durationInFrames: narrative + statScreen };
         }}
       />

@@ -19,7 +19,7 @@ const COLORS = {
 };
 
 const LOGO_URL = "https://files.catbox.moe/2vah2d.svg";
-const STAT_SCREEN_DURATION_SEC = 4; // Durée de l'écran stat final
+const STAT_SCREEN_DURATION_SEC = 7; // Durée de l'écran stat final — 2s d'animations + 5s de vue complète
 
 const AppStoreBadge: React.FC<{ height?: number }> = ({ height = 90 }) => (
   <svg
