@@ -48,7 +48,7 @@ app.post("/render", (req, res) => {
     ].join(" ");
 
     console.log(`[RENDER] Starting: ${compositionId} -> ${fileName}`);
-    execSync(cmd, { cwd: __dirname, timeout: 600000, stdio: "pipe" });
+    execSync(cmd, { cwd: __dirname, timeout: 900000, stdio: "pipe" });
 
     // Cleanup temp props
     if (fs.existsSync(propsPath)) fs.unlinkSync(propsPath);
