@@ -45,6 +45,7 @@ app.post("/render", (req, res) => {
       `"${outputPath}"`,
       `--props="${propsPath}"`,
       `--public-dir="${publicDir}"`,
+      `--timeout=90000`,
     ].join(" ");
 
     console.log(`[RENDER] Starting: ${compositionId} -> ${fileName}`);
